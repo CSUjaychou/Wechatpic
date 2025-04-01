@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>清明话清廉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(180deg, #e0f3e9 0%, #b8d8c8 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 主容器 */
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 背景元素 */
+        .scene-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==') /* 替换为实际背景图 */
+                center/cover no-repeat;
+        }
+
+        /* 交互元素 */
+        .hotspot {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+        .hotspot:active {
+            transform: scale(0.95);
+        }
+
+        /* 位置定位 */
+        #tomb-sweeping {
+            left: 10%;
+            top: 65%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAxklEQVRYhe2UMQ6DMBBF/4kSJSKk3AAdN+QKXIGaG3ADLkBDxw3oKSi4AR0iQkJK1CjJ0mC8axOiSEj8wkj2ePzHw8BfJgAeQAa0lD0AN6Cq4K0KQHn6sS9A3u8HkCwJQHn6tQ/A7E0AytPvRQB6rAJQnn6uAtBzNQDl6dcqAD23AaA8/doGQHk6vA1AeTq8DUB5OrwPQHk6fAxAeTp8DkB5OnwJQHk6fA1AeTr8HIDydPgzAOVvLgDl6fD/AJSnw1m4E6XZbFqYAAAAAElFTkSuQmCC') no-repeat center/contain; /* 祭扫图标 */
+        }
+
+        #qingtuan {
+            left: 30%;
+            top: 70%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAvklEQVRYhe2UMQ6CQBBF/6GiRITY2HEDbrgBN+AG3IAbcANuQA1H4AYSEVETC0pM3GI2y8KyC4kl8QqTzM7M/5nZgX9MF7gBMyBV9gDcgLqCtyoA5enHvgB5vx9AsiQA5enXPgCzNwEoT78XAei5CkB5+rkKQM/VAJSnX6sA9NwGgPL0axsA5enwNgDl6fA2AOXp8DYAlKfD2wCUp8PbAFCeDm8DUJ4ObwNQng5vA0B5OrwNQHk6vA0A5enwPgDlby4A5enw9wCUp8NZuBMPI+J1xR6lVQAAAABJRU5ErkJggg==') no-repeat center/contain; /* 青团图标 */
+        }
+
+        #car {
+            left: 60%;
+            top: 65%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAwklEQVRYhe2UMQ6CQBBF/6GiRITY2HEDbrgBN+AG3IAbcANuQA1H4AYSEVETC0pM3GI2y8KyC4kl8QqTzM7M/5nZgX9MF7gBMyBV9gDcgLqCtyoA5enHvgB5vx9AsiQA5enXPgCzNwEoT78XAei5CkB5+rkKQM/VAJSnX6sA9NwGgPL0axsA5enwNgDl6fA2AOXp8DYAlKfD2wCUp8PbAFCeDm8DUJ4ObwNQng5vA0B5OrwNQHk6vA0A5enwPgDlby4A5enw9wCUp8NZuBMPI+J1xR6lVQAAAABJRU5ErkJggg==') no-repeat center/contain; /* 公车图标 */
+        }
+
+        /* 问答弹窗 */
+        .dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .question {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f8f8;
+            font-size: 14px;
+        }
+
+        /* 动态莲花 */
+        .lotus {
+            position: absolute;
+            animation: float 3s ease-in-out infinite;
+            font-size: 24px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="scene-bg">
+            <!-- 交互元素 -->
+            <div class="hotspot" id="tomb-sweeping"></div>
+            <div class="hotspot" id="qingtuan"></div>
+            <div class="hotspot" id="car"></div>
+
+            <!-- 动态元素 -->
+            <div class="lotus" style="left:15%;top:20%">🌸</div>
+            <div class="lotus" style="left:75%;top:40%">🌸</div>
+            <div class="lotus" style="left:50%;top:80%">🌸</div>
+        </div>
+
+        <!-- 问答对话框 -->
+        <div class="dialog" id="quizDialog">
+            <div class="question" id="questionText"></div>
+            <button class="option-btn" onclick="checkAnswer(true)">合规做法</button>
+            <button class="option-btn" onclick="checkAnswer(false)">违规行为</button>
+            <div id="feedback" style="margin-top:10px;text-align:center"></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化交互
+        document.getElementById('qingtuan').addEventListener('click', () => {
+            showQuiz('可以接受管理服务对象提供的踏青活动吗？', false);
+        });
+
+        document.getElementById('car').addEventListener('click', () => {
+            showQuiz('清明节公车私用是否违反廉洁纪律？', true);
+        });
+
+        // 问答系统
+        function showQuiz(question, correctAnswer) {
+            document.getElementById('questionText').textContent = question;
+            document.getElementById('quizDialog').style.display = 'block';
+            currentAnswer = correctAnswer;
+        }
+
+        function checkAnswer(userAnswer) {
+            const feedback = document.getElementById('feedback');
+            feedback.style.color = userAnswer === currentAnswer ? '#388e3c' : '#d32f2f';
+            feedback.innerHTML = userAnswer === currentAnswer ? 
+                '✓ 清风正气 廉洁清明' : 
+                '✗ 警钟长鸣 引以为戒';
+            
+            setTimeout(() => {
+                document.getElementById('quizDialog').style.display = 'none';
+                feedback.innerHTML = '';
+            }, 1500);
+        }
+
+        // 触屏优化
+        document.addEventListener('touchstart', function(){}, {passive: true});
+    </script>
+</body>
+</html>
